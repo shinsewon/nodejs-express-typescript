@@ -1,13 +1,14 @@
 import { Request, Response } from "express";
-// import User from "../../../models/User";
 const User = require("../../../models/User");
+import jwt from "jsonwebtoken";
+import { rejects } from "assert";
 
 export class Controller {
   static register = (req: Request, res: Response) => {
     const { username, password } = req.body;
     let newUser: any = null;
 
-    const create = (user: { username: string; password: string }) => {
+    const create = (user: typeof User) => {
       if (user) {
         throw new Error("username exist");
       } else {
@@ -15,7 +16,7 @@ export class Controller {
       }
     };
 
-    const count = (user: any) => {
+    const count = (user: typeof User) => {
       newUser = user;
       return User.count({}).exec();
     };
@@ -50,6 +51,48 @@ export class Controller {
   };
 
   static login = (req: Request, res: Response) => {
-    res.send("login api is working");
+    const { username, password } = req.body;
+    const secret = req.app.get("jwt-secret");
+    const check = (user: typeof User) => {
+      if (!user) {
+        throw new Error("login failed");
+      } else {
+        if (user.verify(password)) {
+          const { _id, username, admin } = user;
+          return new Promise((resolve, reject) => {
+            jwt.sign(
+              {
+                _id,
+                username,
+                admin,
+              },
+              secret,
+              { expiresIn: "1d", issuer: "sewon.com", subject: "userInfo" },
+              (err, token) => {
+                if (err) reject(err);
+                resolve(token);
+              }
+            );
+          });
+        } else {
+          throw new Error("login failed");
+        }
+      }
+    };
+
+    const respond = (token: string) => {
+      res.json({
+        message: "logged in successfully",
+        token,
+      });
+    };
+
+    const onError = (error: Error) => {
+      res.status(403).json({
+        message: error.message,
+      });
+    };
+
+    User.findOneByUsername(username).then(check).then(respond).catch(onError);
   };
 }

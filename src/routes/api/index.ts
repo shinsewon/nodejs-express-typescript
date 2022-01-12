@@ -1,8 +1,5 @@
-import { Router } from "express";
-import { Controller as controller } from "./auth/controller";
+import router from "./auth";
 
-export const router = Router();
-
-router.use("/auth", controller.register);
+router.use("/auth", router);
 
 export default router;

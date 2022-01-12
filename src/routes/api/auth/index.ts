@@ -1,10 +1,9 @@
 import { Router } from "express";
 import { Controller as controller } from "./controller";
-import jwt from "jsonwebtoken";
 
 const router = Router();
 
-router.post("/register", controller.register);
 router.post("/login", controller.login);
+router.post("/register", controller.register);
 
-export default { router };
+export default router;

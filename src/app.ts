@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import morgan from "morgan";
 import mongoose from "mongoose";
 import config from "./config/index";
-import { router } from "./routes/api";
+import router from "./routes/api";
 
 const app = express();
 const port = process.env.PORT || 3000;
