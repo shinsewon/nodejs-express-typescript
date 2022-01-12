@@ -31,4 +31,8 @@ User.methods.assignAdmin = function () {
   return this.save();
 };
 
-export default mongoose.model<IUser & mongoose.Document>("User", User);
+// export default mongoose.model<IUser & mongoose.Document>("User", User);
+
+// export default mongoose.model("User", User);
+
+module.exports = mongoose.model<IUser & mongoose.Document>("User", User);
